@@ -1,147 +1,72 @@
 #include <stdio.h>
 
-#define LMonth 31
-#define SMonth 30
-#define VMonth 28
+int isLeapYear( int year );        /* True if leap year */
+int leapYears( int year );         /* The number of leap year */
+int todayOf( int y, int m, int d); /* The number of days since the beginning of the year */
+long days( int y, int m, int d);   /* Total number of days */
+void calendar(int y, int m);       /* display calendar at m y */
 
-typedef enum {
-    Sun,
-    Mon,
-    Jue,
-    Wed,
-    Thu,
-    Fri,
-    Sat
-} WEEK;
+int main(void){
+    int year,month;
 
-typedef enum {
-    January = 1,
-    February,
-    Match,
-    Apirl,
-    May,
-    June,
-    July,
-    August,
-    September,
-    October,
-    November,
-    December
-} MONTH;
+    printf("Enter the month and year: ");
+    scanf("%d %d", &month, &year);
 
-void printMonHead(void)
-{
-   printf("    Sun    Mon    Jue    Wed    Thu    Fri    Sat\n");
+    calendar(year, month);
+
+    return 0;
 }
 
-void  printMonth(const WEEK firstDay, int length )
+int isLeapYear( int y ) /* True if leap year */
 {
-     WEEK weekDay = firstDay % 7;
+    return(y % 400 == 0) || ((y % 4 == 0) && (y % 100 != 0));
+}
 
-     int i;
+int leapYears( int y ) /* The number of leap year */
+{
+    return y/4 - y/100 + y/400;
+}
 
-     printMonHead();
+int todayOf( int y, int m, int d) /* The number of days since the beginning of the year */
+{
+    static int DayOfMonth[] =
+        { -1/*dummy*/,0,31,59,90,120,151,181,212,243,273,304,334};
 
-     for (i=0; i<weekDay;++i)
-     {
-         printf("       ");
-     }
+    return DayOfMonth[m] + d + ((m>2 && isLeapYear(y))? 1 : 0);
+}
 
-    for(i=1;i<=length;++i)
-    {
-          weekDay = (++weekDay)%7;
-          printf("%7d", i);
+long days( int y, int m, int d) /* Total number of days */
+{
+    int lastYear;
 
-          if(weekDay==0) printf("\n");
+    lastYear = y - 1;
+
+    return 365L * lastYear + leapYears(lastYear) + todayOf(y,m,d);
+}
+
+void calendar(int y, int m) /* display calendar at m y */
+{
+    const char *NameOfMonth[] = { NULL/*dummp*/,
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    };
+    char Week[] = "Su Mo Tu We Th Fr Sa";
+    int DayOfMonth[] =
+        { -1/*dummy*/,31,28,31,30,31,30,31,31,30,31,30,31 };
+    int weekOfTopDay;
+    int i,day;
+
+    weekOfTopDay = days(y, m, 1) % 7;
+    if(isLeapYear(y))
+        DayOfMonth[2] = 29;
+    printf("\n     %s %d\n%s\n", NameOfMonth[m], y, Week);
+
+    for(i=0;i<weekOfTopDay;i++)
+        printf("   ");
+    for(i=weekOfTopDay,day=1;day <= DayOfMonth[m];i++,day++){
+        printf("%2d ",day);
+        if(i % 7 == 6)
+            printf("\n");
     }
-
     printf("\n");
-}
-
-
-int isLeapYear(const int yr)
-{
-    return ( yr%( yr%100 ? 4:400) ? 0 : 1);
-}
-
-
-int getYearDay(const int year)
-{
-
-    int lastYear = year-1;
-    int yearNum = lastYear-1899;
-
-    int walker,counter=0;
-    for(walker=1900; walker < year; ++walker)
-    {
-        if(isLeapYear(walker)==1)
-            ++counter;
-    }
-
-    return (365*yearNum+counter+1)%7;
-}
-
-
-void printYear(const int y)
-{
-    WEEK yDay = getYearDay(y);
-    int  vDay = isLeapYear(y);
-
-    int monWeeks[13];
-    int monLen  [13];
-
-    monLen[0]=0;
-    monLen[January]=31;     monLen[February]=28+vDay;   monLen[Match]=31;
-    monLen[Apirl]=30;       monLen[May]=31;             monLen[June]=30;
-    monLen[July]=31;        monLen[August]=31;          monLen[September]=30;
-    monLen[October]=31;     monLen[November]=30;        monLen[December]=31;
-
-    monWeeks[0]=0;
-    monWeeks[January]   = yDay;
-    monWeeks[February]  = ((monWeeks[January]       +monLen[January]        )%7);
-    monWeeks[Match]     = ((monWeeks[February]      +monLen[February]       )%7);
-    monWeeks[Apirl]     = ((monWeeks[Match]         +monLen[Match]          )%7);
-    monWeeks[May]       = ((monWeeks[Apirl]         +monLen[Apirl]          )%7);
-    monWeeks[June]      = ((monWeeks[May]           +monLen[May]            )%7);
-    monWeeks[July]      = ((monWeeks[June]          +monLen[June]           )%7);
-    monWeeks[August]    = ((monWeeks[July]          +monLen[July]           )%7);
-    monWeeks[September] = ((monWeeks[August]        +monLen[August]         )%7);
-    monWeeks[October]   = ((monWeeks[September]     +monLen[September]      )%7);
-    monWeeks[November]  = ((monWeeks[October]       +monLen[October]        )%7);
-    monWeeks[December]  = ((monWeeks[November]      +monLen[November]       )%7);
-
-    int i;
-    for(i=January; i<=December; ++i)
-    {
-        printf("\n-------------------------------------------------\n");
-        printf("                     %d, %d                      \n",y,i);
-        printf("-------------------------------------------------\n");
-        printMonth(monWeeks[i],monLen[i]);
-        printf("\n");
-    }
-
-    return;
-}
-
-
-int main(void)
-{
-
-  int y;
-  int quit=0;
-
-  do
-    {
-        printf("Please enter which Year to Print For You (0 to quit): ");
-        scanf("%d",&y);
-        printf("\n");
-
-        if(y==0)
-            quit = 1;
-        else
-            printYear(y);
-
-    }while(!quit);
-
-  return 0;
 }
