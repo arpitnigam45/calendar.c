@@ -126,9 +126,7 @@ void printYear(const int y)
 
 int main(void)
 {
-//  int y3 = 2000;
-//  int y3 = 1946;
-//  printYear(y3);
+
   int y;
   int quit=0;
 
