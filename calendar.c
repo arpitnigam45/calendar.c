@@ -4,16 +4,16 @@ int isLeapYear( int year );        /* True if leap year */
 int leapYears( int year );         /* The number of leap year */
 int todayOf( int y, int m, int d); /* The number of days since the beginning of the year */
 long days( int y, int m, int d);   /* Total number of days */
-void calendar(int y, int m);       /* display calendar at m y */
+void calendar(int y);       /* display calendar at m y */
 
 int main(void){
-    int year,month;
+    int year,month,i;
 
-    printf("Enter the month and year: ");
-    scanf("%d %d", &month, &year);
+    printf("Enter the year : ");
+    scanf("%d",&year);
 
-    calendar(year, month);
-
+    calendar(year);
+	
     return 0;
 }
 
@@ -44,7 +44,7 @@ long days( int y, int m, int d) /* Total number of days */
     return 365L * lastYear + leapYears(lastYear) + todayOf(y,m,d);
 }
 
-void calendar(int y, int m) /* display calendar at m y */
+void calendar(int y) 
 {
     const char *NameOfMonth[] = { NULL/*dummp*/,
         "January", "February", "March", "April", "May", "June",
@@ -55,8 +55,9 @@ void calendar(int y, int m) /* display calendar at m y */
         { -1/*dummy*/,31,28,31,30,31,30,31,31,30,31,30,31 };
     int weekOfTopDay;
     int i,day;
-
-    weekOfTopDay = days(y, m, 1) % 7;
+int m;
+for(m=1;m<12;m++)
+{  weekOfTopDay = days(y, m, 1) % 7;
     if(isLeapYear(y))
         DayOfMonth[2] = 29;
     printf("\n     %s %d\n%s\n", NameOfMonth[m], y, Week);
@@ -69,4 +70,4 @@ void calendar(int y, int m) /* display calendar at m y */
             printf("\n");
     }
     printf("\n");
-}
+}}
